@@ -44,7 +44,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com 'unsafe-inline'; style-src 'self' https://cdn.tailwindcss.com https://unpkg.com 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com https://*.rainviewer.com https://raw.githubusercontent.com; connect-src 'self' https://api.open-elevation.com https://flood-api.open-meteo.com https://api.open-meteo.com https://nominatim.openstreetmap.org https://router.project-osrm.org https://www.nchmf.gov.vn https://luquetsatlo.nchmf.gov.vn https://www.gdacs.org https://api.rainviewer.com; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+          "value": "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com 'unsafe-inline'; style-src 'self' https://cdn.tailwindcss.com https://unpkg.com 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com https://*.rainviewer.com https://raw.githubusercontent.com; connect-src 'self' https://cdn.tailwindcss.com https://unpkg.com https://api.open-elevation.com https://flood-api.open-meteo.com https://api.open-meteo.com https://nominatim.openstreetmap.org https://router.project-osrm.org https://www.nchmf.gov.vn https://luquetsatlo.nchmf.gov.vn https://www.gdacs.org https://api.rainviewer.com; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
         }
       ]
     }

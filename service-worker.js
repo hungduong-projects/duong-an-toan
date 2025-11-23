@@ -1,12 +1,9 @@
-const CACHE_NAME = 'floodguard-v1';
+const CACHE_NAME = 'floodguard-v2';
 const URLS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+  '/manifest.json'
+  // CDN resources are cached dynamically when first accessed (see fetch handler)
 ];
 
 // Whitelist of trusted origins allowed to be cached
