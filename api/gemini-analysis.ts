@@ -7,7 +7,7 @@ const requestCounts = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 10; // requests per window
 const RATE_WINDOW = 60 * 1000; // 1 minute
 
-// Request validation schema
+// Request validation schema - permissive to allow extra fields
 const RequestSchema = z.object({
   data: z.object({
     elevation: z.number().nullable(),
@@ -16,7 +16,7 @@ const RequestSchema = z.object({
     precip72h: z.number().optional().nullable(),
     riverDischarge: z.number().optional().nullable(),
     locationName: z.string().optional(),
-  }),
+  }).passthrough(), // Allow extra fields
   vehicleType: z.enum(['CAR', 'MOTORCYCLE', 'PEDESTRIAN']).optional(),
   language: z.enum(['vi', 'en']).optional(),
   nearbyStations: z.array(z.object({
@@ -28,8 +28,8 @@ const RequestSchema = z.object({
     luongmuatd: z.number().nullable(),
     luongmuadb: z.number(),
     distance: z.number()
-  })).optional()
-});
+  }).passthrough()).optional() // Allow extra fields in stations
+}).passthrough(); // Allow extra fields at top level
 
 // Get client IP for rate limiting
 function getClientIP(req: VercelRequest): string {
@@ -93,6 +93,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     validatedData = RequestSchema.parse(req.body);
   } catch (error) {
+    // Log validation errors for debugging
+    console.error('Validation error:', error);
+    console.error('Request body:', JSON.stringify(req.body, null, 2));
     return res.status(400).json({
       error: 'Invalid request data',
       details: error instanceof z.ZodError ? error.issues : 'Validation failed'
