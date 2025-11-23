@@ -280,37 +280,20 @@ export const fetchLocationDataBatch = async (
   }
 };
 
-// Fetch Vietnamese weather warnings from NCHMF
+// Fetch Vietnamese weather warnings from NCHMF via proxy
 export const fetchVietnameseWarnings = async (): Promise<WeatherWarning[]> => {
   try {
-    const response = await fetch('https://www.nchmf.gov.vn');
+    const response = await fetch('/api/nchmf-warnings');
     if (!response.ok) return [];
 
-    const html = await response.text();
-    const warnings: WeatherWarning[] = [];
+    const data = await response.json();
 
-    // Parse warnings from the HTML
-    // Look for patterns like: <a href="..." alt="TIN ...">TIN ...
-    const warningRegex = /<a[^>]+href="([^"]+)"[^>]+alt="([^"]+)"[^>]*>([^<]+)<label>\(([^)]+)\)<\/label>/gi;
-    let match;
-
-    while ((match = warningRegex.exec(html)) && warnings.length < 5) {
-      // Sanitize extracted HTML content to prevent XSS
-      const rawTitle = match[2] || match[3];
-      const rawTimestamp = match[4];
-
-      // Strip all HTML tags and entities
-      const title = DOMPurify.sanitize(rawTitle, { ALLOWED_TAGS: [] });
-      const timestamp = DOMPurify.sanitize(rawTimestamp, { ALLOWED_TAGS: [] });
-
-      // Skip if sanitization resulted in empty strings
-      if (!title || !timestamp) continue;
-
+    // Transform proxy response to match WeatherWarning interface
+    return data.map((warning: any) => {
       // Categorize based on keywords
       let category: WeatherWarning['category'] = 'other';
-      let severity: WeatherWarning['severity'] = 'medium';
+      const titleUpper = warning.title.toUpperCase();
 
-      const titleUpper = title.toUpperCase();
       if (titleUpper.includes('LŨ') || titleUpper.includes('FLOODING')) {
         category = 'flood';
       } else if (titleUpper.includes('MƯA') || titleUpper.includes('RAIN')) {
@@ -323,22 +306,13 @@ export const fetchVietnameseWarnings = async (): Promise<WeatherWarning[]> => {
         category = 'cold';
       }
 
-      // Determine severity
-      if (titleUpper.includes('KHẨN CẤP') || titleUpper.includes('EMERGENCY')) {
-        severity = 'emergency';
-      } else if (titleUpper.includes('NGUY HIỂM') || titleUpper.includes('RẤT LỚN')) {
-        severity = 'high';
-      }
-
-      warnings.push({
-        title,
-        timestamp,
-        severity,
+      return {
+        title: warning.title,
+        timestamp: warning.date,
+        severity: warning.severity,
         category
-      });
-    }
-
-    return warnings;
+      };
+    });
   } catch (error) {
     console.error("NCHMF fetch error:", error);
     return [];
@@ -434,30 +408,10 @@ export const findNearbyNCHMFStations = (
   return stationsWithDistance;
 };
 
-// Fetch NCHMF monitoring stations with rainfall and risk data
+// Fetch NCHMF monitoring stations with rainfall and risk data via proxy
 export const fetchNCHMFStations = async (date?: Date): Promise<NCHMFStation[]> => {
   try {
-    // Use provided date or current date rounded to nearest hour
-    const queryDate = date || new Date();
-    queryDate.setMinutes(0, 0, 0);
-
-    // Format date as YYYY-MM-DD HH:mm:ss (required by API)
-    const dateStr = queryDate.toISOString().slice(0, 19).replace('T', ' ');
-
-    // Prepare form data
-    const formData = new URLSearchParams({
-      sogiodubao: '6', // 6-hour forecast
-      date: dateStr
-    });
-
-    const response = await fetch('https://luquetsatlo.nchmf.gov.vn/LayerMapBox/getDSCanhbaoSLLQ', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: formData.toString()
-    });
+    const response = await fetch('/api/nchmf-stations');
 
     if (!response.ok) {
       console.error('NCHMF stations fetch failed:', response.status);
@@ -466,7 +420,7 @@ export const fetchNCHMFStations = async (date?: Date): Promise<NCHMFStation[]> =
 
     const data = await response.json();
 
-    // Validate each station against schema
+    // Proxy already validates, but we still double-check the schema
     try {
       const validatedStations = z.array(NCHMFStationSchema).parse(data);
       return validatedStations as unknown as NCHMFStation[];
