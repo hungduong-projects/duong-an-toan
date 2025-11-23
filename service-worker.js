@@ -9,6 +9,13 @@ const URLS_TO_CACHE = [
   'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
 ];
 
+// Whitelist of trusted origins allowed to be cached
+const CACHEABLE_ORIGINS = [
+  'https://unpkg.com',
+  'https://cdn.tailwindcss.com',
+  self.location.origin // The app's own origin
+];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -33,12 +40,21 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
-        // Cache external assets dynamically if successful
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-             const responseClone = networkResponse.clone();
-             caches.open(CACHE_NAME).then((cache) => {
-               cache.put(event.request, responseClone);
-             });
+        // Cache external assets dynamically if successful AND from trusted origin
+        if (networkResponse &&
+            networkResponse.status === 200 &&
+            networkResponse.type === 'basic') {
+
+          // Check if request URL is from a cacheable origin
+          const requestUrl = new URL(event.request.url);
+          const isCacheable = CACHEABLE_ORIGINS.some(origin => requestUrl.href.startsWith(origin));
+
+          if (isCacheable) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
         }
         return networkResponse;
       }).catch(() => {

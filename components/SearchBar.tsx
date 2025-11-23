@@ -59,10 +59,26 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, []);
 
   const handleSelect = (item: SearchResult) => {
-    const displayName = item.display_name.split(',')[0];
-    setQuery(displayName); 
+    // Validate coordinates before parsing
+    const lat = parseFloat(item.lat);
+    const lng = parseFloat(item.lon);
+
+    // Check for valid numbers and coordinate ranges
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error('Invalid coordinates from search result:', item);
+      return;
+    }
+
+    // Validate coordinate ranges
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      console.error('Coordinates out of valid range:', { lat, lng });
+      return;
+    }
+
+    const displayName = item.display_name.split(',')[0].trim();
+    setQuery(displayName);
     setIsOpen(false);
-    onSelectLocation(parseFloat(item.lat), parseFloat(item.lon), displayName);
+    onSelectLocation(lat, lng, displayName);
   };
 
   return (

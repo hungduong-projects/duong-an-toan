@@ -1,5 +1,5 @@
 {
-  "name": "Dự Đoán Lũ",
+  "name": "Đường An Toàn",
   "description": "Công cụ đánh giá rủi ro lũ lụt thời gian thực sử dụng radar mưa, dữ liệu độ cao và lời khuyên an toàn từ AI.",
   "requestFramePermissions": [
     "geolocation"

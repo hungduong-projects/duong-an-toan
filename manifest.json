@@ -1,11 +1,11 @@
 {
-  "name": "Dự Đoán Lũ",
-  "short_name": "Dự Đoán Lũ",
+  "name": "Đường An Toàn",
+  "short_name": "Đường An Toàn",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "description": "Công cụ đánh giá rủi ro lũ lụt ngoại tuyến.",
+  "description": "Đánh giá nguy cơ lũ lụt và tìm tuyến đường an toàn với dữ liệu NCHMF và AI",
   "icons": [
     {
       "src": "https://picsum.photos/192/192",

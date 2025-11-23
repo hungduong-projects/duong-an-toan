@@ -1,0 +1,143 @@
+{
+  "nav": {
+    "brand": "Đường An Toàn",
+    "about": "Về Chúng Tôi",
+    "donate": "Ủng Hộ"
+  },
+  "search": {
+    "placeholder": "Tìm địa điểm hoặc xem lộ trình...",
+    "origin": "Chọn điểm đi...",
+    "destination": "Chọn điểm đến...",
+    "myLocation": "Vị trí của tôi"
+  },
+  "vehicle": {
+    "car": "Ô tô",
+    "motorcycle": "Xe máy",
+    "pedestrian": "Đi bộ"
+  },
+  "button": {
+    "locateMe": "Định vị tôi",
+    "close": "Đóng",
+    "findSafeRoute": "Tìm Đường An Toàn"
+  },
+  "infoPanel": {
+    "pointAnalysis": "Báo cáo Tại điểm",
+    "routeAnalysis": "Phân tích Tuyến đường",
+    "distance": "Khoảng cách",
+    "duration": "Thời gian",
+    "elevation": "Độ cao",
+    "precipitation": "Lượng mưa",
+    "floodRisk": "Nguy cơ Lũ lụt:",
+    "safetyAssessment": "Đánh giá An toàn:",
+    "aiAdvice": "Lời khuyên AI",
+    "dangerousSegments": "Đoạn nguy hiểm trên lộ trình",
+    "minutes": "phút"
+  },
+  "risk": {
+    "high": "CAO",
+    "medium": "TRUNG BÌNH",
+    "low": "THẤP",
+    "unknown": "CHƯA RÕ"
+  },
+  "loading": {
+    "fetchingData": "Đang tải dữ liệu...",
+    "calculatingRoute": "Đang tính toán tuyến đường...",
+    "analyzingTerrain": "Đang phân tích địa hình và thời tiết...",
+    "analyzingRoute": "Đang phân tích lộ trình di chuyển...",
+    "loadingLocation": "🌐 Đang tải dữ liệu vị trí...",
+    "checkingWeather": "🌦️ Đang kiểm tra thời tiết...",
+    "analyzingRisk": "🤖 Đang phân tích rủi ro bằng AI...",
+    "checkingRouteWeather": "🌦️ Đang kiểm tra thời tiết trên tuyến đường (8 điểm)...",
+    "detectingDangers": "⚠️ Đang phát hiện đoạn nguy hiểm...",
+    "analyzingRouteSafety": "🤖 Đang phân tích an toàn tuyến đường bằng AI..."
+  },
+  "error": {
+    "noRoute": "Không tìm thấy đường đi.",
+    "noRouteFound": "❌ Không tìm thấy tuyến đường",
+    "locationAccess": "Không thể truy cập vị trí."
+  },
+  "confidence": {
+    "high": "✓ Độ tin cậy cao",
+    "medium": "⚠️ Độ tin cậy trung bình",
+    "low": "⚠️ Độ tin cậy thấp"
+  },
+  "warnings": {
+    "officialWarnings": "🚨 Cảnh báo chính thức",
+    "count": "cảnh báo"
+  },
+  "page": {
+    "about": {
+      "title": "Về Chúng Tôi",
+      "description": "Thông tin về ứng dụng Đường An Toàn",
+      "intro": {
+        "heading": "🇻🇳 Về dự án",
+        "paragraph1": "Trong những ngày mưa lũ, mình làm demo nhỏ này như một cách góp sức từ xa.",
+        "paragraph2": "Đây không phải hệ thống chính thức, không chạy real-time hoàn toàn, và chắc chắn không thể thay thế các kênh cứu trợ của Nhà nước.",
+        "paragraph3": "Đường An Toàn giúp người dùng đánh giá nguy cơ lũ lụt và tìm tuyến đường an toàn hơn trong mưa bão, bằng cách kết hợp dữ liệu chính thức từ NCHMF và phân tích AI."
+      },
+      "features": {
+        "heading": "Tính năng chính:",
+        "floodRisk": {
+          "title": "📍 Đánh giá nguy cơ theo điểm",
+          "point1": "Tích hợp dữ liệu thời gian thực từ ~60-90 trạm quan trắc NCHMF với đánh giá chuyên gia về nguy cơ lũ quét và sạt lở",
+          "point2": "Phân tích AI kết hợp dữ liệu mưa hiện tại, dự báo 6 giờ, và địa hình. Điều chỉnh theo phương tiện (ô tô, xe máy, đi bộ)",
+          "point3": "Hiển thị mức độ tin cậy của dữ liệu để người dùng có thể đánh giá chất lượng thông tin"
+        },
+        "safeRoute": {
+          "title": "🛣️ Phân tích an toàn tuyến đường",
+          "point1": "Xác định các đoạn nguy hiểm trên lộ trình dựa trên nhiều điểm kiểm tra",
+          "point2": "Tìm trạm quan trắc NCHMF gần điểm xuất phát, điểm đến, và các đoạn nguy hiểm",
+          "point3": "Gợi ý AI dựa trên điều kiện thực tế từ dữ liệu chuyên gia và hiển thị cảnh báo trực quan trên bản đồ"
+        }
+      },
+      "disclaimer": {
+        "paragraph1": "Mình chỉ là người nảy ra ý tưởng và ghép các API miễn phí với nhau, không giỏi lập trình, không có đội ngũ hạ tầng, nên chắc chắn còn rất nhiều lỗi và giới hạn.",
+        "paragraph2": "Nếu bạn muốn giúp cải thiện công cụ này, mời fork/đóng góp tại: ",
+        "githubLink": "https://github.com/hungduong-projects/duong-an-toan"
+      },
+      "donation": {
+        "heading": "Ủng hộ đồng bào vùng lũ",
+        "paragraph1": "Dự án này không nhận tiền trực tiếp.",
+        "paragraph2": "Nếu bạn có điều kiện, xin hãy ủng hộ qua Quỹ cứu trợ – Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam, theo thông tin tài khoản dưới đây.",
+        "imageAlt1": "Thông tin tài khoản ngân hàng VND - Mặt trận Tổ quốc Việt Nam",
+        "imageAlt2": "Thông tin tài khoản ngân hàng USD - Mặt trận Tổ quốc Việt Nam",
+        "viewFullDetails": "Xem chi tiết đầy đủ"
+      }
+    },
+    "donate": {
+      "title": "Ủng Hộ",
+      "description": "Hỗ trợ phát triển ứng dụng",
+      "heading": "Ủng hộ đồng bào bị thiệt hại do mưa lũ",
+      "intro": {
+        "paragraph1": "Mỗi đóng góp của bạn là một tia hy vọng cho đồng bào đang gặp khó khăn.",
+        "paragraph2": "Dự án này không nhận tiền trực tiếp, nhưng nếu bạn có tấm lòng muốn giúp đỡ, xin hãy ủng hộ qua Quỹ cứu trợ chính thức của Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam. Mọi đóng góp của bạn sẽ đến tay những người đang cần nhất.",
+        "paragraph3": "Dưới đây là thông tin tài khoản chính thức để ủng hộ:"
+      },
+      "vndSection": {
+        "heading": "Tài khoản VND (Mặt trận Tổ quốc Việt Nam)"
+      },
+      "usdSection": {
+        "heading": "Tài khoản USD (cho bạn ở nước ngoài)",
+        "intro": "Xin chân thành cảm ơn các bạn ở nước ngoài đã đóng góp! Để chuyển khoản bằng USD, dưới đây là hai tài khoản chính thức:",
+        "account1": {
+          "bank": "VietinBank (Ngân hàng TMCP Công thương Việt Nam)",
+          "accountName": "Tên tài khoản: Ban Vận động cứu trợ Trung ương",
+          "accountNumber": "Số tài khoản: 118 600 102025",
+          "branch": "Chi nhánh: VietinBank – Đông Hà Nội",
+          "swift": "Mã SWIFT: ICBVVNVX131"
+        },
+        "account2": {
+          "bank": "Vietcombank (Ngân hàng TMCP Ngoại thương Việt Nam)",
+          "accountName": "Tên tài khoản: Mặt trận Tổ quốc Việt Nam – Ban cứu trợ Trung ương",
+          "accountNumber": "Số tài khoản: 666.666.1010",
+          "branch": "Chi nhánh: Vietcombank – Sở Giao dịch",
+          "swift": "Mã SWIFT: BFTVVNVX"
+        },
+        "thankYou": "Xin chân thành cảm ơn sự đóng góp của bạn!"
+      },
+      "imageAlt1": "Thông tin tài khoản ngân hàng VND",
+      "imageAlt2": "Thông tin tài khoản ngân hàng USD",
+      "clickToEnlarge": "Nhấn để phóng to QR code"
+    }
+  }
+}

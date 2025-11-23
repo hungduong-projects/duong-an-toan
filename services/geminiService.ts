@@ -1,59 +1,125 @@
-import { GoogleGenAI } from "@google/genai";
-import { LocationData, RiskLevel, RouteInfo } from "../types";
+import { LocationData, RiskLevel, RouteInfo, DangerousSegment, Coordinates, VehicleType, ConfidenceLevel, NCHMFStation } from "../types";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Get vehicle-specific context for AI prompts
+const getVehicleContext = (vehicleType?: VehicleType): string => {
+  switch (vehicleType) {
+    case VehicleType.CAR:
+      return "Người dùng đi bằng Ô TÔ. An toàn khi nước cao <25-30cm, nguy hiểm khi >30cm (có thể hỏng động cơ).";
+    case VehicleType.MOTORCYCLE:
+      return "Người dùng đi bằng XE MÁY. Rất nguy hiểm khi nước cao >12-15cm (xe có thể chết máy, người dễ té).";
+    case VehicleType.PEDESTRIAN:
+      return "Người dùng ĐI BỘ. Nguy hiểm khi nước cao >15cm (dòng chảy mạnh có thể cuốn trôi).";
+    default:
+      return "Người dùng di chuyển (chưa rõ phương tiện).";
+  }
+};
 
 export const getSafetyAdvice = async (
-  data: LocationData
-): Promise<{ risk: RiskLevel; advice: string }> => {
-  const { elevation, precipitation, riverDischarge } = data;
-
-  const prompt = `
-    Phân tích dữ liệu rủi ro lũ lụt sau đây cho một địa điểm tại Việt Nam:
-    - Độ cao: ${elevation !== null ? elevation + ' mét' : 'Không xác định'}
-    - Lượng mưa hiện tại: ${precipitation} mm
-    - Lưu lượng sông dự báo: ${riverDischarge} m3/s
-
-    Bối cảnh: Người dùng đang kiểm tra thông tin này trong cơn bão tại Việt Nam. 
-    - Độ cao thấp (<3m) rất nguy hiểm (ví dụ: Đồng bằng sông Cửu Long, sông Hồng, ven biển miền Trung).
-    - Mưa lớn (>10mm) gây nguy cơ lũ quét ở vùng núi hoặc ngập lụt đô thị (Hà Nội, TP.HCM).
-
-    Trả về phản hồi dạng JSON với:
-    1. "risk": Một trong ["Low", "Medium", "High"] (giữ nguyên tiếng Anh cho mã máy).
-    2. "advice": Một câu hướng dẫn an toàn ngắn gọn, trực tiếp bằng Tiếng Việt.
-
-    Chỉ trả về JSON thô.
-  `;
-
+  data: LocationData,
+  vehicleType?: VehicleType,
+  language: string = 'vi',
+  nearbyStations?: Array<NCHMFStation & { distance: number }>
+): Promise<{ risk: RiskLevel; advice: string; confidence: ConfidenceLevel }> => {
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      }
+    // Call the secure backend API endpoint
+    const response = await fetch('/api/gemini-analysis', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data,
+        vehicleType,
+        language,
+        nearbyStations
+      })
     });
 
-    const text = response.text;
-    if (!text) throw new Error("No response from AI");
+    if (!response.ok) {
+      if (response.status === 429) {
+        const errorData = await response.json();
+        throw new Error(errorData.errorVi || errorData.error || 'Rate limit exceeded');
+      }
+      throw new Error(`API request failed: ${response.status}`);
+    }
 
-    const result = JSON.parse(text);
+    const result = await response.json();
+
     return {
       risk: result.risk as RiskLevel || RiskLevel.UNKNOWN,
-      advice: result.advice || "Hãy cảnh giác và theo dõi tin tức địa phương."
+      advice: result.advice || (language === 'en' ? "Stay alert and monitor local news." : "Hãy cảnh giác và theo dõi tin tức địa phương."),
+      confidence: result.confidence as ConfidenceLevel || ConfidenceLevel.MEDIUM
     };
 
   } catch (error) {
-    console.error("Gemini Error:", error);
-    // Fallback logic
+    console.error("API Error:", error);
+
+    // Client-side fallback logic
+    const { elevation, precipitation, precipForecast6h, precip72h } = data;
+    const precip72hValue = precip72h || 0;
+    const isEnglish = language === 'en';
+
+    let confidence = ConfidenceLevel.MEDIUM;
+    if (nearbyStations && nearbyStations.length > 0) {
+      confidence = ConfidenceLevel.HIGH;
+    } else if (elevation === null) {
+      confidence = ConfidenceLevel.LOW;
+    }
+
     let fallbackRisk = RiskLevel.LOW;
-    if (elevation !== null && elevation < 5) fallbackRisk = RiskLevel.MEDIUM;
-    if (precipitation > 10 || riverDischarge > 50) fallbackRisk = RiskLevel.HIGH;
-    
+    let fallbackAdvice = isEnglish
+      ? "Stay alert and monitor local news."
+      : "Hãy cảnh giác và theo dõi tin tức địa phương.";
+
+    // PRIORITY 1: Check 72h accumulated rainfall
+    if (precip72hValue > 100 && elevation !== null && elevation < 10) {
+      fallbackRisk = RiskLevel.HIGH;
+      fallbackAdvice = isEnglish
+        ? "Ground saturated from heavy rain (past 3 days). High flooding risk from overflowing rivers. Avoid travel."
+        : "Đất bão hòa do mưa lớn (3 ngày qua). Nguy cơ ngập cao do sông tràn bờ. Tránh di chuyển.";
+    } else if (precip72hValue > 100) {
+      fallbackRisk = RiskLevel.MEDIUM;
+      fallbackAdvice = isEnglish
+        ? "Heavy rainfall over past 3 days. Ground saturated, flooding possible in low areas."
+        : "Mưa lớn trong 3 ngày qua. Đất bão hòa, có thể ngập ở vùng trũng.";
+    } else if (precip72hValue > 50 && elevation !== null && elevation < 5) {
+      fallbackRisk = RiskLevel.MEDIUM;
+      fallbackAdvice = isEnglish
+        ? "Moderate rain accumulation + low elevation. Watch for rising water levels."
+        : "Mưa tích lũy vừa + độ cao thấp. Theo dõi mực nước dâng.";
+    }
+
+    // PRIORITY 2: Elevation risk
+    if (elevation !== null && elevation < 3) {
+      if (fallbackRisk === RiskLevel.LOW) fallbackRisk = RiskLevel.HIGH;
+      fallbackAdvice = isEnglish
+        ? "Low-lying area, high flood risk. Move to higher ground immediately."
+        : "Khu vực thấp trũng, nguy cơ ngập cao. Di chuyển lên vùng cao hơn ngay.";
+    } else if (elevation !== null && elevation < 10 && fallbackRisk === RiskLevel.LOW) {
+      fallbackRisk = RiskLevel.MEDIUM;
+      fallbackAdvice = isEnglish
+        ? "Medium elevation area. Monitor water levels and prepare to evacuate if needed."
+        : "Khu vực có độ cao trung bình. Theo dõi mực nước và chuẩn bị sơ tán nếu cần.";
+    }
+
+    // PRIORITY 3: Current precipitation risk
+    if (precipitation > 20) {
+      fallbackRisk = RiskLevel.HIGH;
+      fallbackAdvice = isEnglish
+        ? "Very heavy rain, high risk of flash floods or severe flooding. Avoid travel."
+        : "Mưa rất lớn, nguy cơ lũ quét hoặc ngập lụt cao. Tránh di chuyển.";
+    } else if (precipitation > 10 && fallbackRisk === RiskLevel.LOW) {
+      fallbackRisk = RiskLevel.MEDIUM;
+      fallbackAdvice = isEnglish
+        ? "Heavy rain, limit travel. Avoid low-lying areas."
+        : "Mưa lớn, hạn chế di chuyển. Tránh các vùng trũng thấp.";
+    }
+
+    const errorPrefix = isEnglish ? "Offline mode. " : "Chế độ ngoại tuyến. ";
     return {
       risk: fallbackRisk,
-      advice: "Không thể kết nối với AI. Vui lòng di chuyển lên vùng cao hơn nếu mưa lớn."
+      advice: errorPrefix + fallbackAdvice,
+      confidence
     };
   }
 };
@@ -61,55 +127,111 @@ export const getSafetyAdvice = async (
 export const evaluateRouteSafety = async (
   start: LocationData,
   end: LocationData,
-  routeInfo: RouteInfo
+  routeInfo: RouteInfo,
+  vehicleType?: VehicleType,
+  language: string = 'vi',
+  nearbyStations?: Array<NCHMFStation & { distance: number }>
 ): Promise<{ risk: RiskLevel; advice: string }> => {
-  const distanceKm = (routeInfo.distance / 1000).toFixed(1);
-  const durationMin = Math.round(routeInfo.duration / 60);
-
-  const prompt = `
-    Người dùng muốn di chuyển từ A đến B tại Việt Nam trong điều kiện mưa bão.
-    
-    Thông tin hành trình:
-    - Khoảng cách: ${distanceKm} km
-    - Thời gian dự kiến: ${durationMin} phút
-    
-    Điểm xuất phát (A):
-    - Độ cao: ${start.elevation ?? '?'}m, Mưa: ${start.precipitation}mm
-    
-    Điểm đến (B):
-    - Độ cao: ${end.elevation ?? '?'}m, Mưa: ${end.precipitation}mm
-
-    Hãy phân tích sự an toàn của việc di chuyển này. Nếu mưa lớn ở cả hai đầu hoặc một đầu có độ cao thấp, hãy cảnh báo.
-    
-    Trả về JSON:
-    1. "risk": ["Low", "Medium", "High"]
-    2. "advice": Lời khuyên ngắn gọn (tối đa 2 câu) về việc có nên đi hay không và cần chú ý gì (ví dụ: tránh vùng trũng, đi chậm).
-
-    Chỉ trả về JSON thô.
-  `;
-
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      }
+    // Call the secure backend API endpoint
+    const response = await fetch('/api/gemini-route', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        start,
+        end,
+        routeInfo,
+        vehicleType,
+        language,
+        nearbyStations
+      })
     });
 
-    const text = response.text;
-    if (!text) throw new Error("No response from AI");
+    if (!response.ok) {
+      if (response.status === 429) {
+        const errorData = await response.json();
+        throw new Error(errorData.errorVi || errorData.error || 'Rate limit exceeded');
+      }
+      throw new Error(`API request failed: ${response.status}`);
+    }
 
-    const result = JSON.parse(text);
+    const result = await response.json();
+
     return {
       risk: result.risk as RiskLevel || RiskLevel.UNKNOWN,
-      advice: result.advice || "Hãy lái xe cẩn thận và quan sát mực nước."
+      advice: result.advice || (language === 'en' ? "Drive carefully and monitor water levels." : "Hãy lái xe cẩn thận và quan sát mực nước.")
     };
 
   } catch (error) {
+    console.error("API Error (route):", error);
+
+    const isEnglish = language === 'en';
+    const fallbackAdvice = isEnglish
+      ? "Offline mode. Drive carefully and avoid low-lying flooded areas."
+      : "Chế độ ngoại tuyến. Hãy lái xe cẩn thận và tránh các vùng trũng thấp ngập nước.";
+
     return {
       risk: RiskLevel.MEDIUM,
-      advice: "Hệ thống AI bận. Hãy lái xe cẩn thận và tránh các vùng trũng thấp ngập nước."
+      advice: fallbackAdvice
     };
   }
+};
+
+// Identify dangerous segments along a route based on location data
+export const identifyDangerousSegments = (
+  segmentDataWithCoords: Array<{ data: LocationData; coords: Coordinates; index: number }>,
+  totalDistance: number,
+  vehicleType?: VehicleType
+): DangerousSegment[] => {
+  const dangerousSegments: DangerousSegment[] = [];
+
+  segmentDataWithCoords.forEach((segment, arrayIndex) => {
+    const { data, coords, index } = segment;
+    const { elevation, precipitation, riverDischarge } = data;
+
+    let riskLevel: RiskLevel = RiskLevel.LOW;
+    const reasons: string[] = [];
+
+    // Check elevation risk
+    if (elevation !== null && elevation < 3) {
+      riskLevel = RiskLevel.HIGH;
+      reasons.push(`độ cao rất thấp (${elevation.toFixed(1)}m)`);
+    } else if (elevation !== null && elevation < 10) {
+      if (riskLevel === RiskLevel.LOW) riskLevel = RiskLevel.MEDIUM;
+      reasons.push(`độ cao thấp (${elevation.toFixed(1)}m)`);
+    }
+
+    // Check precipitation risk (current + forecast)
+    const totalRain = precipitation + (data.precipForecast6h || 0);
+    if (totalRain > 30) {
+      riskLevel = RiskLevel.HIGH;
+      reasons.push(`mưa lớn kéo dài (${totalRain.toFixed(0)}mm)`);
+    } else if (precipitation > 20) {
+      riskLevel = RiskLevel.HIGH;
+      reasons.push(`mưa rất lớn (${precipitation}mm)`);
+    } else if (precipitation > 10 || totalRain > 20) {
+      if (riskLevel === RiskLevel.LOW) riskLevel = RiskLevel.MEDIUM;
+      reasons.push(`mưa lớn (${precipitation}mm)`);
+    }
+
+    // Only add if there's actual risk
+    if (riskLevel !== RiskLevel.LOW && reasons.length > 0) {
+      // Calculate approximate distance from start
+      const distanceFromStart = totalDistance > 0
+        ? (index / segmentDataWithCoords.length) * (totalDistance / 1000)
+        : 0;
+
+      dangerousSegments.push({
+        coordinates: coords,
+        segmentIndex: index,
+        riskLevel,
+        reason: reasons.join(', '),
+        distanceFromStart: parseFloat(distanceFromStart.toFixed(1))
+      });
+    }
+  });
+
+  return dangerousSegments;
 };

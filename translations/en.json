@@ -1,0 +1,143 @@
+{
+  "nav": {
+    "brand": "Safe Road",
+    "about": "About",
+    "donate": "Donate"
+  },
+  "search": {
+    "placeholder": "Search location or view route...",
+    "origin": "Choose starting point...",
+    "destination": "Choose destination...",
+    "myLocation": "My Location"
+  },
+  "vehicle": {
+    "car": "Car",
+    "motorcycle": "Motorcycle",
+    "pedestrian": "Walking"
+  },
+  "button": {
+    "locateMe": "Locate me",
+    "close": "Close",
+    "findSafeRoute": "Find Safe Route"
+  },
+  "infoPanel": {
+    "pointAnalysis": "Point Report",
+    "routeAnalysis": "Route Analysis",
+    "distance": "Distance",
+    "duration": "Duration",
+    "elevation": "Elevation",
+    "precipitation": "Rainfall",
+    "floodRisk": "Flood Risk:",
+    "safetyAssessment": "Safety Assessment:",
+    "aiAdvice": "AI Advice",
+    "dangerousSegments": "Dangerous segments on route",
+    "minutes": "min"
+  },
+  "risk": {
+    "high": "HIGH",
+    "medium": "MEDIUM",
+    "low": "LOW",
+    "unknown": "UNKNOWN"
+  },
+  "loading": {
+    "fetchingData": "Loading data...",
+    "calculatingRoute": "Calculating route...",
+    "analyzingTerrain": "Analyzing terrain and weather...",
+    "analyzingRoute": "Analyzing travel route...",
+    "loadingLocation": "🌐 Loading location data...",
+    "checkingWeather": "🌦️ Checking weather...",
+    "analyzingRisk": "🤖 Analyzing risk with AI...",
+    "checkingRouteWeather": "🌦️ Checking weather along route (8 points)...",
+    "detectingDangers": "⚠️ Detecting dangerous segments...",
+    "analyzingRouteSafety": "🤖 Analyzing route safety with AI..."
+  },
+  "error": {
+    "noRoute": "No route found.",
+    "noRouteFound": "❌ No route found",
+    "locationAccess": "Unable to access location."
+  },
+  "confidence": {
+    "high": "✓ High confidence",
+    "medium": "⚠️ Medium confidence",
+    "low": "⚠️ Low confidence"
+  },
+  "warnings": {
+    "officialWarnings": "🚨 Official warnings",
+    "count": "warnings"
+  },
+  "page": {
+    "about": {
+      "title": "About",
+      "description": "Information about Safe Road app",
+      "intro": {
+        "heading": "🇬🇧 About this project",
+        "paragraph1": "This is a small personal demo built during the recent floods in Vietnam.",
+        "paragraph2": "It is not an official system, does not provide fully real-time or guaranteed accurate data, and must not replace government warnings or professional rescue operations.",
+        "paragraph3": "Safe Road helps users assess flood risks and find safer routes during storms by combining official NCHMF data with AI analysis."
+      },
+      "features": {
+        "heading": "Main features:",
+        "floodRisk": {
+          "title": "📍 Point-based risk assessment",
+          "point1": "Integrates real-time data from ~60-90 NCHMF monitoring stations with expert assessments on flash flood and landslide risks",
+          "point2": "AI analysis combines current rainfall, 6-hour forecast, and terrain data. Adjusts for vehicle type (car, motorcycle, pedestrian)",
+          "point3": "Shows data confidence level so users can assess information quality"
+        },
+        "safeRoute": {
+          "title": "🛣️ Route safety analysis",
+          "point1": "Identifies dangerous segments along the route based on multiple checkpoint analysis",
+          "point2": "Finds nearby NCHMF monitoring stations near start point, destination, and dangerous segments",
+          "point3": "AI suggestions based on real conditions from expert data with visual warnings displayed on map"
+        }
+      },
+      "disclaimer": {
+        "paragraph1": "I'm just a person with an idea, not a professional engineer or organization.",
+        "paragraph2": "Want to help improve this tool? Fork/contribute at: ",
+        "githubLink": "https://github.com/hungduong-projects/duong-an-toan"
+      },
+      "donation": {
+        "heading": "How to donate",
+        "paragraph1": "This project does not collect money directly.",
+        "paragraph2": "If you wish to support people affected by floods in Vietnam, please donate to the official Central Relief Fund of the Vietnam Fatherland Front using the banking information below.",
+        "imageAlt1": "VND bank account information - Vietnam Fatherland Front",
+        "imageAlt2": "USD bank account information - Vietnam Fatherland Front",
+        "viewFullDetails": "View full details"
+      }
+    },
+    "donate": {
+      "title": "Donate",
+      "description": "Support app development",
+      "heading": "Support people affected by floods in Vietnam",
+      "intro": {
+        "paragraph1": "Every contribution you make is a ray of hope for those facing hardship.",
+        "paragraph2": "This project does not collect money directly, but if you wish to help, please donate through the official Central Relief Fund of the Vietnam Fatherland Front. Your contributions will reach those who need it most.",
+        "paragraph3": "Below are the official bank accounts for donations:"
+      },
+      "vndSection": {
+        "heading": "VND Accounts (Vietnam Fatherland Front)"
+      },
+      "usdSection": {
+        "heading": "USD Donation Accounts (for international donors)",
+        "intro": "Thank you, overseas friends, for your contribution! For international donors who wish to transfer in USD, here are the two official accounts:",
+        "account1": {
+          "bank": "VietinBank (Vietnam Joint Stock Commercial Bank for Industry and Trade)",
+          "accountName": "Account Name: Central Committee for Disaster Relief",
+          "accountNumber": "Account Number: 118 600 102025",
+          "branch": "Bank Branch: VietinBank – Dong Ha Noi Branch",
+          "swift": "SWIFT Code: ICBVVNVX131"
+        },
+        "account2": {
+          "bank": "Vietcombank (Joint Stock Commercial Bank for Foreign Trade of Vietnam)",
+          "accountName": "Account Name: Vietnam Fatherland Front – Central Relief Fund",
+          "accountNumber": "Account Number: 666.666.1010",
+          "branch": "Bank Branch: Vietcombank – Giaodich Branch",
+          "swift": "SWIFT Code: BFTVVNVX"
+        },
+        "thankYou": "Thank you for your generous support!"
+      },
+      "imageAlt1": "VND bank account information",
+      "imageAlt2": "USD bank account information",
+      "clickToEnlarge": "Click to enlarge QR code"
+    }
+  }
+}
