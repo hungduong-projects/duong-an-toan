@@ -14,6 +14,8 @@ const RequestSchema = z.object({
     precipitation: z.number(),
     precipForecast6h: z.number().optional().nullable(),
     precip72h: z.number().optional().nullable(),
+    riverDischarge: z.number(),
+    locationName: z.string(),
   }),
   vehicleType: z.enum(['CAR', 'MOTORCYCLE', 'PEDESTRIAN']).optional(),
   language: z.enum(['vi', 'en']).optional(),
