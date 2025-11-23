@@ -1,6 +1,7 @@
 {
   "nav": {
     "brand": "Safe Road",
+    "emergency": "Emergency",
     "about": "About",
     "donate": "Donate"
   },
@@ -97,8 +98,8 @@
       },
       "donation": {
         "heading": "How to donate",
-        "paragraph1": "This project does not collect money directly.",
-        "paragraph2": "If you wish to support people affected by floods in Vietnam, please donate to the official Central Relief Fund of the Vietnam Fatherland Front using the banking information below.",
+        "paragraph1": "Please support flood victims through the official Central Relief Fund of the Vietnam Fatherland Front. Your contributions will reach those who need it most.",
+        "paragraph2": "Below are the official bank accounts for donations:",
         "imageAlt1": "VND bank account information - Vietnam Fatherland Front",
         "imageAlt2": "USD bank account information - Vietnam Fatherland Front",
         "viewFullDetails": "View full details"
@@ -110,7 +111,7 @@
       "heading": "Support people affected by floods in Vietnam",
       "intro": {
         "paragraph1": "Every contribution you make is a ray of hope for those facing hardship.",
-        "paragraph2": "This project does not collect money directly, but if you wish to help, please donate through the official Central Relief Fund of the Vietnam Fatherland Front. Your contributions will reach those who need it most.",
+        "paragraph2": "Please support flood victims through the official Central Relief Fund of the Vietnam Fatherland Front. Your contributions will reach those who need it most.",
         "paragraph3": "Below are the official bank accounts for donations:"
       },
       "vndSection": {

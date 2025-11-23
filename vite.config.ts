@@ -10,6 +10,10 @@ export default defineConfig(({ mode }) => {
         port: 3000,
         host: '0.0.0.0',
       },
+      define: {
+        // Only inject API key in development mode for local testing
+        'import.meta.env.VITE_GEMINI_API_KEY': mode === 'development' ? JSON.stringify(env.GEMINI_API_KEY) : 'undefined'
+      },
       plugins: [
         react(),
         // Copy service worker and manifest to dist after build

@@ -1,11 +1,12 @@
 {
   "nav": {
     "brand": "Đường An Toàn",
-    "about": "Về Chúng Tôi",
+    "emergency": "Cứu Hộ",
+    "about": "Thông Tin",
     "donate": "Ủng Hộ"
   },
   "search": {
-    "placeholder": "Tìm địa điểm hoặc xem lộ trình...",
+    "placeholder": "Tìm đường đi...",
     "origin": "Chọn điểm đi...",
     "destination": "Chọn điểm đến...",
     "myLocation": "Vị trí của tôi"
@@ -97,8 +98,8 @@
       },
       "donation": {
         "heading": "Ủng hộ đồng bào vùng lũ",
-        "paragraph1": "Dự án này không nhận tiền trực tiếp.",
-        "paragraph2": "Nếu bạn có điều kiện, xin hãy ủng hộ qua Quỹ cứu trợ – Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam, theo thông tin tài khoản dưới đây.",
+        "paragraph1": "Xin hãy ủng hộ đồng bào vùng lũ qua Quỹ cứu trợ chính thức của Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam. Mọi đóng góp của bạn sẽ đến tay những người đang cần nhất.",
+        "paragraph2": "Dưới đây là thông tin tài khoản chính thức để ủng hộ:",
         "imageAlt1": "Thông tin tài khoản ngân hàng VND - Mặt trận Tổ quốc Việt Nam",
         "imageAlt2": "Thông tin tài khoản ngân hàng USD - Mặt trận Tổ quốc Việt Nam",
         "viewFullDetails": "Xem chi tiết đầy đủ"
@@ -110,7 +111,7 @@
       "heading": "Ủng hộ đồng bào bị thiệt hại do mưa lũ",
       "intro": {
         "paragraph1": "Mỗi đóng góp của bạn là một tia hy vọng cho đồng bào đang gặp khó khăn.",
-        "paragraph2": "Dự án này không nhận tiền trực tiếp, nhưng nếu bạn có tấm lòng muốn giúp đỡ, xin hãy ủng hộ qua Quỹ cứu trợ chính thức của Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam. Mọi đóng góp của bạn sẽ đến tay những người đang cần nhất.",
+        "paragraph2": "Xin hãy ủng hộ đồng bào vùng lũ qua Quỹ cứu trợ chính thức của Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam. Mọi đóng góp của bạn sẽ đến tay những người đang cần nhất.",
         "paragraph3": "Dưới đây là thông tin tài khoản chính thức để ủng hộ:"
       },
       "vndSection": {

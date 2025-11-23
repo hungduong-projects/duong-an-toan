@@ -1,4 +1,12 @@
+import { GoogleGenAI } from "@google/genai";
 import { LocationData, RiskLevel, RouteInfo, DangerousSegment, Coordinates, VehicleType, ConfidenceLevel, NCHMFStation } from "../types";
+
+// Environment detection
+const IS_DEV = import.meta.env.DEV;
+const DEV_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+// Initialize Gemini client for development only
+const devAI = IS_DEV && DEV_API_KEY ? new GoogleGenAI({ apiKey: DEV_API_KEY }) : null;
 
 // Get vehicle-specific context for AI prompts
 const getVehicleContext = (vehicleType?: VehicleType): string => {

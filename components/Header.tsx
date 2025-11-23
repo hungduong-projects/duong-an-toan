@@ -34,17 +34,18 @@ const Header: React.FC<HeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 shadow-sm">
       <div className="container mx-auto px-4 py-4">
         {/* Top Row: Brand, Search, Navigation */}
-        <div className="flex flex-col md:flex-row gap-3 items-start md:items-center md:justify-between">
+        <div className="flex flex-col md:flex-row gap-2 items-start md:items-center md:justify-between">
 
           {/* Left: Brand */}
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
-            <h1 className="font-bold text-lg text-slate-900">
-              {t('nav.brand')}
-            </h1>
+          <div className="flex items-center gap-1.5">
+            <img
+              src="/favicon.svg"
+              alt={t('nav.brand')}
+              className="w-8 h-8 sm:w-10 sm:h-10"
+            />
           </div>
 
           {/* Center: Search Container */}
