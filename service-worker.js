@@ -1,4 +1,4 @@
-const CACHE_NAME = 'floodguard-v2';
+const CACHE_NAME = 'floodguard-v3';
 const URLS_TO_CACHE = [
   '/',
   '/index.html',
@@ -39,15 +39,13 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         // Cache external assets dynamically if successful AND from trusted origin
-        if (networkResponse &&
-            networkResponse.status === 200 &&
-            networkResponse.type === 'basic') {
-
+        if (networkResponse && networkResponse.ok) {
           // Check if request URL is from a cacheable origin
           const requestUrl = new URL(event.request.url);
           const isCacheable = CACHEABLE_ORIGINS.some(origin => requestUrl.href.startsWith(origin));
 
           if (isCacheable) {
+            // Clone before caching to avoid consuming the response
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseClone);
@@ -56,11 +54,13 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // If fetch fails (offline), return null to fall back to cache
-        // For images (tiles), we could return a placeholder, but Leaflet handles missing tiles gracefully enough.
-        return null;
+        // If fetch fails (offline), return a proper 404 Response instead of null
+        // For images (tiles), Leaflet handles missing tiles gracefully
+        return new Response(null, { status: 404, statusText: 'Network request failed' });
       });
-      return cachedResponse || fetchPromise || new Response(null, { status: 404 });
+
+      // If cached, return it immediately, otherwise wait for network
+      return cachedResponse || fetchPromise;
     })
   );
 });

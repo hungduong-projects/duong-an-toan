@@ -86,6 +86,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <div className="relative">
         <input
           type="text"
+          id="location-search-input"
+          name="location-search"
+          aria-label="Tìm kiếm địa điểm"
           className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           placeholder={placeholder}
           value={query}
