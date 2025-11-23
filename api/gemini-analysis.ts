@@ -7,28 +7,28 @@ const requestCounts = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 10; // requests per window
 const RATE_WINDOW = 60 * 1000; // 1 minute
 
-// Request validation schema - permissive to allow extra fields
+// Request validation schema - maximally permissive with type coercion
 const RequestSchema = z.object({
   data: z.object({
-    elevation: z.number().nullable(),
-    precipitation: z.number(),
-    precipForecast6h: z.number().optional().nullable(),
-    precip72h: z.number().optional().nullable(),
-    riverDischarge: z.number().optional().nullable(),
-    locationName: z.string().optional(),
+    elevation: z.coerce.number().nullable().catch(null),
+    precipitation: z.coerce.number().default(0),
+    precipForecast6h: z.coerce.number().optional().nullable().catch(null),
+    precip72h: z.coerce.number().optional().nullable().catch(null),
+    riverDischarge: z.coerce.number().optional().nullable().catch(null),
+    locationName: z.string().optional().catch(undefined),
   }).passthrough(), // Allow extra fields
-  vehicleType: z.enum(['CAR', 'MOTORCYCLE', 'PEDESTRIAN']).optional(),
-  language: z.enum(['vi', 'en']).optional(),
+  vehicleType: z.enum(['CAR', 'MOTORCYCLE', 'PEDESTRIAN']).optional().catch(undefined),
+  language: z.enum(['vi', 'en']).optional().catch('vi'),
   nearbyStations: z.array(z.object({
-    commune_name: z.string(),
-    district_name: z.string(),
-    provinceName: z.string(),
-    nguycoluquet: z.enum(['Thấp', 'Trung bình', 'Cao']),
-    nguycosatlo: z.enum(['Thấp', 'Trung bình', 'Cao']),
-    luongmuatd: z.number().nullable(),
-    luongmuadb: z.number(),
-    distance: z.number()
-  }).passthrough()).optional() // Allow extra fields in stations
+    commune_name: z.string().catch(''),
+    district_name: z.string().catch(''),
+    provinceName: z.string().catch(''),
+    nguycoluquet: z.enum(['Thấp', 'Trung bình', 'Cao']).catch('Thấp'),
+    nguycosatlo: z.enum(['Thấp', 'Trung bình', 'Cao']).catch('Thấp'),
+    luongmuatd: z.coerce.number().nullable().catch(null),
+    luongmuadb: z.coerce.number().catch(0),
+    distance: z.coerce.number().catch(0)
+  }).passthrough()).optional().catch(undefined) // Allow extra fields in stations
 }).passthrough(); // Allow extra fields at top level
 
 // Get client IP for rate limiting
