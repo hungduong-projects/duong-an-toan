@@ -10,6 +10,7 @@ const URLS_TO_CACHE = [
 const CACHEABLE_ORIGINS = [
   'https://unpkg.com',
   'https://cdn.tailwindcss.com',
+  'https://tilecache.rainviewer.com', // RainViewer radar tiles
   self.location.origin // The app's own origin
 ];
 
@@ -55,10 +56,11 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // If fetch fails (offline), return null or handle specific offline fallbacks
+        // If fetch fails (offline), return null to fall back to cache
         // For images (tiles), we could return a placeholder, but Leaflet handles missing tiles gracefully enough.
+        return null;
       });
-      return cachedResponse || fetchPromise;
+      return cachedResponse || fetchPromise || new Response(null, { status: 404 });
     })
   );
 });
