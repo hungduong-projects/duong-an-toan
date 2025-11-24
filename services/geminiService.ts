@@ -63,13 +63,25 @@ export const getSafetyAdvice = async (
     console.error("API Error:", error);
 
     // Client-side fallback logic
-    const { elevation, precipitation, precipForecast6h, precip72h } = data;
+    const { elevation, precip72h } = data;
     const precip72hValue = precip72h || 0;
     const isEnglish = language === 'en';
 
+    // Prioritize NCHMF station data in fallback if available
+    let precipitation = data.precipitation;
+    let precipForecast6h = data.precipForecast6h;
     let confidence = ConfidenceLevel.MEDIUM;
+
     if (nearbyStations && nearbyStations.length > 0) {
-      confidence = ConfidenceLevel.HIGH;
+      // Use average of nearby NCHMF stations (ground-truth observations)
+      const stationsWithin15km = nearbyStations.filter(s => s.distance! <= 15);
+      if (stationsWithin15km.length > 0) {
+        precipitation = stationsWithin15km.reduce((sum, s) => sum + (s.luongmuatd || 0), 0) / stationsWithin15km.length;
+        precipForecast6h = stationsWithin15km.reduce((sum, s) => sum + s.luongmuadb, 0) / stationsWithin15km.length;
+        confidence = ConfidenceLevel.HIGH; // High confidence with official NCHMF data
+      } else {
+        confidence = ConfidenceLevel.HIGH; // Still high confidence if stations nearby
+      }
     } else if (elevation === null) {
       confidence = ConfidenceLevel.LOW;
     }

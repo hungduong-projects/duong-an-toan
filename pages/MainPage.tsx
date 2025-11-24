@@ -49,6 +49,9 @@ const MainPage: React.FC = () => {
   // NCHMF Monitoring Stations State
   const [nchmfStations, setNchmfStations] = useState<NCHMFStation[]>([]);
 
+  // Data Source State (for InfoPanel indicator)
+  const [dataSource, setDataSource] = useState<'nchmf' | 'open-meteo' | undefined>(undefined);
+
   // Initialize: Try to get user location
   useEffect(() => {
     if (navigator.geolocation) {
@@ -123,23 +126,43 @@ const MainPage: React.FC = () => {
     const elevation = await fetchElevation(coords);
 
     setAnalysis({ riskLevel: RiskLevel.UNKNOWN, advice: t('loading.checkingWeather'), isLoading: true, type: 'point' });
-    const floodData = await fetchFloodData(coords);
+
+    // Find nearby NCHMF monitoring stations for official data (prioritize within 15km)
+    const nearbyStations = findNearbyNCHMFStations(coords, nchmfStations, 50, 3);
+    const veryNearbyStations = nearbyStations.filter(s => s.distance! <= 15);
+
+    let precipitation = 0;
+    let precipForecast6h = 0;
+    let precip72h: number | null = null;
+
+    // Prioritize NCHMF official data when available within 15km
+    if (veryNearbyStations.length > 0) {
+      // Use average of nearby NCHMF stations (ground-truth observations)
+      precipitation = veryNearbyStations.reduce((sum, s) => sum + (s.luongmuatd || 0), 0) / veryNearbyStations.length;
+      precipForecast6h = veryNearbyStations.reduce((sum, s) => sum + s.luongmuadb, 0) / veryNearbyStations.length;
+      // Note: NCHMF doesn't provide 72h data, keep as null
+      setDataSource('nchmf');
+    } else {
+      // Fallback to Open-Meteo global forecast when no nearby official stations
+      const floodData = await fetchFloodData(coords);
+      precipitation = floodData.precip;
+      precipForecast6h = floodData.precipForecast6h;
+      precip72h = floodData.precip72h;
+      setDataSource('open-meteo');
+    }
 
     const data: LocationData = {
       elevation,
-      precipitation: floodData.precip,
-      precipForecast6h: floodData.precipForecast6h,
-      precip72h: floodData.precip72h,
-      riverDischarge: floodData.discharge,
+      precipitation,
+      precipForecast6h,
+      precip72h,
+      riverDischarge: null, // River discharge data removed as unreliable
       locationName: name || `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`
     };
 
     setSelectedLocationData(data);
 
     setAnalysis({ riskLevel: RiskLevel.UNKNOWN, advice: t('loading.analyzingRisk'), isLoading: true, type: 'point' });
-
-    // Find nearby NCHMF monitoring stations for official data
-    const nearbyStations = findNearbyNCHMFStations(coords, nchmfStations, 50, 3);
 
     // Get AI Advice with vehicle type, current language, and nearby official station data
     const aiResult = await getSafetyAdvice(data, vehicleType, i18n.language, nearbyStations);
@@ -424,6 +447,7 @@ const MainPage: React.FC = () => {
           analysis={analysis}
           routeInfo={routeInfo}
           activeWarnings={activeWarnings}
+          dataSource={dataSource}
           onClose={() => {
             setIsSidebarOpen(false);
           }}

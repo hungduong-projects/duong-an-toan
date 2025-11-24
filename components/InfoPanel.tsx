@@ -7,10 +7,11 @@ interface InfoPanelProps {
   analysis: AnalysisResult;
   routeInfo?: RouteInfo | null;
   activeWarnings?: WeatherWarning[];
+  dataSource?: 'nchmf' | 'open-meteo';
   onClose: () => void;
 }
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ locationData, analysis, routeInfo, activeWarnings = [], onClose }) => {
+const InfoPanel: React.FC<InfoPanelProps> = ({ locationData, analysis, routeInfo, activeWarnings = [], dataSource, onClose }) => {
   const { t } = useTranslation();
 
   const getConfidenceLabel = (confidence?: ConfidenceLevel) => {
@@ -124,9 +125,20 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ locationData, analysis, routeInfo
             </div>
           </div>
           <div className="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-xl">
-            <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('infoPanel.precipitation')}</div>
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-xs text-slate-500 dark:text-slate-400">{t('infoPanel.precipitation')}</div>
+              {dataSource && (
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                  dataSource === 'nchmf'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                }`}>
+                  {dataSource === 'nchmf' ? 'NCHMF' : 'Open-Meteo'}
+                </span>
+              )}
+            </div>
             <div className="text-xl font-bold text-slate-800 dark:text-slate-100">
-              {locationData.precipitation} <span className="text-sm font-normal">mm/h</span>
+              {locationData.precipitation.toFixed(1)} <span className="text-sm font-normal">mm/h</span>
             </div>
             <div className="space-y-0.5 mt-1">
               {locationData.precipForecast6h && locationData.precipForecast6h > 0 && (

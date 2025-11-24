@@ -103,7 +103,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { data, vehicleType, language = 'vi', nearbyStations } = validatedData;
-  const { elevation, precipitation, precipForecast6h, precip72h } = data;
+  const { elevation, precip72h } = data;
+
+  // Prioritize NCHMF station data over Open-Meteo if available
+  let precipitation = data.precipitation;
+  let precipForecast6h = data.precipForecast6h;
+
+  if (nearbyStations && nearbyStations.length > 0) {
+    const stationsWithin15km = nearbyStations.filter(s => s.distance <= 15);
+    if (stationsWithin15km.length > 0) {
+      // Use average of nearby NCHMF stations (ground-truth observations)
+      precipitation = stationsWithin15km.reduce((sum, s) => sum + (s.luongmuatd || 0), 0) / stationsWithin15km.length;
+      precipForecast6h = stationsWithin15km.reduce((sum, s) => sum + s.luongmuadb, 0) / stationsWithin15km.length;
+    }
+  }
 
   // Initialize Gemini with server-side API key
   const apiKey = process.env.GEMINI_API_KEY;
