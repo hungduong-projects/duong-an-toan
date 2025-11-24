@@ -129,8 +129,8 @@ const MapContainerWrapper: React.FC<MapProps> = ({
       if (ts) setRainTimestamp(ts);
     };
     loadRainLayer();
-    // Refresh rain layer every 10 mins
-    const interval = setInterval(loadRainLayer, 600000); 
+    // Refresh rain layer every 30 mins to reduce rate limiting
+    const interval = setInterval(loadRainLayer, 1800000); 
     return () => clearInterval(interval);
   }, []);
 

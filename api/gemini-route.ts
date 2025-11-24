@@ -7,48 +7,48 @@ const requestCounts = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 10; // requests per window
 const RATE_WINDOW = 60 * 1000; // 1 minute
 
-// Request validation schema
+// Request validation schema - maximally permissive with type coercion
 const DangerousSegmentSchema = z.object({
   coordinates: z.object({
-    lat: z.number().min(-90).max(90),
-    lng: z.number().min(-180).max(180)
-  }),
-  segmentIndex: z.number(),
-  riskLevel: z.enum(['Low', 'Medium', 'High']),
-  reason: z.string(),
-  distanceFromStart: z.number()
-});
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180)
+  }).passthrough(),
+  segmentIndex: z.coerce.number().catch(0),
+  riskLevel: z.enum(['Low', 'Medium', 'High']).catch('Medium'),
+  reason: z.string().catch(''),
+  distanceFromStart: z.coerce.number().catch(0)
+}).passthrough();
 
 const LocationDataSchema = z.object({
-  elevation: z.number().nullable(),
-  precipitation: z.number(),
-  precipForecast6h: z.number().optional().nullable(),
-  precip72h: z.number().optional().nullable(),
-});
+  elevation: z.coerce.number().nullable().catch(null),
+  precipitation: z.coerce.number().default(0),
+  precipForecast6h: z.coerce.number().optional().nullable().catch(null),
+  precip72h: z.coerce.number().optional().nullable().catch(null),
+}).passthrough();
 
 const RouteInfoSchema = z.object({
-  distance: z.number(),
-  duration: z.number(),
-  dangerousSegments: z.array(DangerousSegmentSchema).optional()
-});
+  distance: z.coerce.number().catch(0),
+  duration: z.coerce.number().catch(0),
+  dangerousSegments: z.array(DangerousSegmentSchema).optional().catch(undefined)
+}).passthrough();
 
 const RequestSchema = z.object({
   start: LocationDataSchema,
   end: LocationDataSchema,
   routeInfo: RouteInfoSchema,
-  vehicleType: z.enum(['CAR', 'MOTORCYCLE', 'PEDESTRIAN']).optional(),
-  language: z.enum(['vi', 'en']).optional(),
+  vehicleType: z.enum(['CAR', 'MOTORCYCLE', 'PEDESTRIAN']).optional().catch(undefined),
+  language: z.enum(['vi', 'en']).optional().catch('vi'),
   nearbyStations: z.array(z.object({
-    commune_name: z.string(),
-    district_name: z.string(),
-    provinceName: z.string(),
-    nguycoluquet: z.enum(['Thấp', 'Trung bình', 'Cao']),
-    nguycosatlo: z.enum(['Thấp', 'Trung bình', 'Cao']),
-    luongmuatd: z.number().nullable(),
-    luongmuadb: z.number(),
-    distance: z.number()
-  })).optional()
-});
+    commune_name: z.string().catch(''),
+    district_name: z.string().catch(''),
+    provinceName: z.string().catch(''),
+    nguycoluquet: z.enum(['Thấp', 'Trung bình', 'Cao']).catch('Thấp'),
+    nguycosatlo: z.enum(['Thấp', 'Trung bình', 'Cao']).catch('Thấp'),
+    luongmuatd: z.coerce.number().nullable().catch(null),
+    luongmuadb: z.coerce.number().catch(0),
+    distance: z.coerce.number().catch(0)
+  }).passthrough()).optional().catch(undefined)
+}).passthrough();
 
 // Get client IP for rate limiting
 function getClientIP(req: VercelRequest): string {

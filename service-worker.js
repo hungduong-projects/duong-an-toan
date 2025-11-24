@@ -44,7 +44,7 @@ self.addEventListener('fetch', (event) => {
           const requestUrl = new URL(event.request.url);
           const isCacheable = CACHEABLE_ORIGINS.some(origin => requestUrl.href.startsWith(origin));
 
-          if (isCacheable) {
+          if (isCacheable && event.request.method === 'GET') {
             // Clone before caching to avoid consuming the response
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
