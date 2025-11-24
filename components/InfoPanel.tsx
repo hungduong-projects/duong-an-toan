@@ -85,15 +85,15 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ locationData, analysis, routeInfo
 
       {/* Weather Warnings Section */}
       {activeWarnings.length > 0 && (
-        <div className="mb-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-3 rounded-r-lg max-h-32 overflow-y-auto">
+        <div className="mb-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-3 rounded-r-lg max-h-48 overflow-y-auto">
           <h3 className="text-xs font-bold text-red-800 dark:text-red-200 mb-2 flex items-center gap-2">
             {t('warnings.officialWarnings')} ({activeWarnings.length})
           </h3>
           <div className="space-y-1.5">
-            {activeWarnings.slice(0, 3).map((warning, index) => (
+            {activeWarnings.map((warning, index) => (
               <div key={index} className="text-xs text-red-700 dark:text-red-300 flex items-start gap-1">
                 <span className="shrink-0">{getWarningSeverityIcon(warning.severity)}</span>
-                <span className="line-clamp-2">{warning.title}</span>
+                <span>{warning.title}</span>
               </div>
             ))}
           </div>

@@ -12,11 +12,12 @@ const AboutPage: React.FC = () => {
       {/* Header with Navigation */}
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
-            <h1 className="font-bold text-lg text-slate-900">
-              {t('nav.brand')}
-            </h1>
+          <Link to="/" className="flex items-center gap-1.5">
+            <img
+              src="/favicon.svg"
+              alt={t('nav.brand')}
+              className="w-8 h-8 sm:w-10 sm:h-10"
+            />
           </Link>
           <Navigation />
         </div>
